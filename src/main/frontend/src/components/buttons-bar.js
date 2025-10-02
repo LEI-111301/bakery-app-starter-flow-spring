@@ -1,6 +1,32 @@
 import { html, css, LitElement } from 'lit';
 
+/**
+ * `buttons-bar` é um Web Component baseado em LitElement.
+ * 
+ * Este componente cria uma barra flexível que pode conter botões e informação adicional.
+ * Pode ser usado para organizar botões à esquerda e à direita, bem como mostrar informação
+ * no centro/direita.
+ *
+ * @element buttons-bar
+ *
+ * @slot left - Área à esquerda da barra (normalmente botões).
+ * @slot info - Área central/direita da barra para mostrar informação adicional.
+ * @slot right - Área à direita da barra (normalmente botões).
+ *
+ * @csspart info - Parte estilizada que contém a informação.
+ *
+ * @cssprop --lumo-space-s - Espaçamento superior da barra.
+ * @cssprop --lumo-space-xs - Espaçamento entre botões.
+ * @cssprop --lumo-shade-20pct - Cor usada para a sombra da barra.
+ */
 class ButtonsBarElement extends LitElement {
+  /**
+   * Estilos CSS aplicados ao componente.
+   *
+   * - Usa `flexbox` para organizar os elementos.
+   * - Adiciona `box-shadow` no topo.
+   * - Remove a sombra quando o atributo `no-scroll` está presente.
+   */
   static get styles() {
     return css`
       :host {
@@ -38,6 +64,11 @@ class ButtonsBarElement extends LitElement {
     `;
   }
 
+  /**
+   * Renderiza o template do componente.
+   *
+   * @returns {import('lit').TemplateResult} Template HTML do componente.
+   */
   render() {
     return html`
       <slot name="left"></slot>
@@ -46,6 +77,11 @@ class ButtonsBarElement extends LitElement {
     `;
   }
 
+  /**
+   * Identificador do Web Component.
+   *
+   * @returns {string} Nome da tag do componente.
+   */
   static get is() {
     return 'buttons-bar';
   }
