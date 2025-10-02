@@ -6,7 +6,7 @@
 ## Membros
 | Curso        | Nº     | Nome                |
 |--------------|--------|---------------------|
-| LEI          | ______ |                   |
+| LEI          | 130485 | Diogo Gregório  |
 | LEI          | 111301 | Nuno Alves        |
 | LEI          | 110582 | Miguel Passos     |
 | LEI          | -      | -                 |
