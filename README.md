@@ -1,3 +1,16 @@
+# Projeto X
+
+## Grupo
+**Nickname do grupo:** DevStars 🚀  
+
+## Membros
+| Curso        | Nº     | Nome                |
+|--------------|--------|---------------------|
+| LEI          | ______ |                   |
+| LEI          | ______ |                   |
+| LEI          | 110582 | Miguel Passos     |
+| LEI          | -      | -                 |
+
 # ⚠️ This starter is not recommended ⚠️
 
 **This starter is not recommended for new Vaadin Flow applications. Instead, visit [start.vaadin.com](https://start.vaadin.com/) to configure and download a Vaadin project that reflects the current best practices.**
