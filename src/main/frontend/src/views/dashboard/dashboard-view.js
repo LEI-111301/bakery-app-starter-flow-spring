@@ -1,3 +1,26 @@
+/**
+ * @module DashboardView
+ * @description
+ * Componente principal do dashboard, responsável por compor e exibir
+ * os principais indicadores, gráficos e tabelas num layout responsivo.
+ *
+ * Este componente usa **Vaadin Board** para o layout e organiza:
+ * - Contadores superiores (`<dashboard-counter-label>`)
+ * - Gráficos de colunas e de donut (`<vaadin-chart>`)
+ * - Tabela de pedidos (`<vaadin-grid>`)
+ *
+ * Inclui um *hook* (`firstUpdated`) que mede o tempo de carregamento da página
+ * com base na renderização completa dos gráficos e da grelha (grid).
+ *
+ * @example
+ * ```html
+ * <dashboard-view></dashboard-view>
+ * ```
+ *
+ * @extends {LitElement}
+ * @fires performance-mark - (indireto) Marca o ponto `bakery-page-loaded` quando todos os componentes carregam.
+ */
+
 import { html, css, LitElement } from 'lit';
 import '@vaadin/board';
 import '@vaadin/board/vaadin-board-row.js';
@@ -8,6 +31,14 @@ import './dashboard-counter-label.js';
 import { sharedStyles } from '../../../styles/shared-styles.js';
 
 class DashboardView extends LitElement {
+  /**
+   * Define os estilos CSS do componente, incluindo o layout do Vaadin Board,
+   * ajustes de espaçamento e dimensões dos gráficos.
+   *
+   * Usa também `sharedStyles` importados para manter consistência visual com o resto da aplicação.
+   *
+   * @returns {CSSResult[]}
+   */
   static get styles() {
     return [
       sharedStyles,
@@ -55,9 +86,21 @@ class DashboardView extends LitElement {
     ];
   }
 
+  /**
+   * Renderiza o layout completo do dashboard.
+   *
+   * Estrutura principal:
+   * 1. **Primeira linha:** Quatro `dashboard-counter-label` (com gráficos de contagem e cores distintas)
+   * 2. **Segunda linha:** Dois gráficos de colunas (`deliveriesThisMonth`, `deliveriesThisYear`)
+   * 3. **Terceira linha:** Gráfico anual de vendas (`yearlySalesGraph`)
+   * 4. **Quarta linha:** Gráfico de produto mensal e grelha de pedidos (`monthlyProductSplit`, `ordersGrid`)
+   *
+   * @returns {TemplateResult}
+   */
   render() {
     return html`
       <vaadin-board>
+        <!-- Linha 1: Contadores -->
         <vaadin-board-row>
           <dashboard-counter-label id="todayCount" class="green">
             <vaadin-chart
@@ -79,6 +122,8 @@ class DashboardView extends LitElement {
             class="gray"
           ></dashboard-counter-label>
         </vaadin-board-row>
+
+        <!-- Linha 2: Gráficos de colunas -->
         <vaadin-board-row>
           <div class="vaadin-board-cell">
             <vaadin-chart
@@ -95,6 +140,8 @@ class DashboardView extends LitElement {
             ></vaadin-chart>
           </div>
         </vaadin-board-row>
+
+        <!-- Linha 3: Gráfico de vendas anuais -->
         <vaadin-board-row>
           <vaadin-chart
             id="yearlySalesGraph"
@@ -102,6 +149,8 @@ class DashboardView extends LitElement {
             theme="classic"
           ></vaadin-chart>
         </vaadin-board-row>
+
+        <!-- Linha 4: Gráfico de produtos e grelha -->
         <vaadin-board-row class="custom-board-row">
           <div class="vaadin-board-cell">
             <vaadin-chart
@@ -118,22 +167,47 @@ class DashboardView extends LitElement {
     `;
   }
 
+  /**
+   * Nome do custom element para registro.
+   * @readonly
+   * @returns {string}
+   */
   static get is() {
     return 'dashboard-view';
   }
 
-  // This method is overridden to measure the page load performance and can be safely removed
-  // if there is no need for that.
+  /**
+   * Lifecycle: chamado após a primeira renderização.
+   *
+   * Este método mede o tempo de carregamento da página:
+   * - Cria uma `Promise` que é resolvida quando todos os gráficos terminam de carregar.
+   * - Cria outra `Promise` que é resolvida quando a grelha (`#ordersGrid`) deixa de estar em estado `loading`.
+   * - Quando ambas são resolvidas, marca o evento de performance `"bakery-page-loaded"`.
+   *
+   * Pode ser removido em produção se não for necessária medição de performance.
+   *
+   * @override
+   */
   firstUpdated() {
     super.firstUpdated();
-    this._chartsLoaded = new Promise((resolve, reject) => {
-      // save the 'resolve' callback to trigger it later from the server
+
+    /**
+     * Promise resolvida quando todos os gráficos terminam de carregar.
+     * @type {Promise<void>}
+     * @private
+     */
+    this._chartsLoaded = new Promise((resolve) => {
       this._chartsLoadedResolve = () => {
         resolve();
       };
     });
 
-    this._gridLoaded = new Promise((resolve, reject) => {
+    /**
+     * Promise resolvida quando a grelha (`ordersGrid`) termina o carregamento.
+     * @type {Promise<void>}
+     * @private
+     */
+    this._gridLoaded = new Promise((resolve) => {
       const ordersGrid = this.shadowRoot.querySelector('#ordersGrid');
       const listener = () => {
         if (!ordersGrid.loading) {
@@ -144,8 +218,11 @@ class DashboardView extends LitElement {
       ordersGrid.addEventListener('loading-changed', listener);
     });
 
+    // Marca o momento em que todos os componentes estão totalmente carregados
     Promise.all([this._chartsLoaded, this._gridLoaded]).then(() => {
-      window.performance.mark && window.performance.mark('bakery-page-loaded');
+      if (window.performance.mark) {
+        window.performance.mark('bakery-page-loaded');
+      }
     });
   }
 }

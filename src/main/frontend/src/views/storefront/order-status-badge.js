@@ -1,8 +1,50 @@
+/**
+ * @module OrderStatusBadge
+ * @description
+ * Componente web responsável por exibir um **selo visual de status (badge)** de um pedido.
+ *
+ * O `<order-status-badge>` é usado em conjunto com componentes como `<order-card>` para indicar,
+ * de forma visual e textual, o estado atual de um pedido no sistema.
+ *
+ * ---
+ * ### Principais recursos:
+ * - Suporte a diferentes **estados de pedido**: `new`, `ready`, `problem`, `delivered`.
+ * - Mudança automática de **cor e ícone** conforme o estado.
+ * - Modo **compacto (`small`)** para uso em layouts reduzidos.
+ * - Reflete o atributo `status` no DOM e mantém coerência entre o valor interno e o atributo HTML.
+ *
+ * ---
+ * @example
+ * ```html
+ * <!-- Status: novo pedido -->
+ * <order-status-badge status="new"></order-status-badge>
+ *
+ * <!-- Status: pronto -->
+ * <order-status-badge status="ready"></order-status-badge>
+ *
+ * <!-- Status: entregue -->
+ * <order-status-badge status="delivered"></order-status-badge>
+ *
+ * <!-- Versão compacta -->
+ * <order-status-badge status="ready" small></order-status-badge>
+ * ```
+ *
+ * ---
+ * @extends {LitElement}
+ */
 import { html, css, LitElement } from 'lit';
 import '@vaadin/icon';
 import '@vaadin/icons';
 
 class OrderStatusBadge extends LitElement {
+  /**
+   * Define os estilos do componente.
+   *
+   * As regras de estilo alteram cor, fundo e espaçamento com base no valor do atributo `status`.
+   * O badge é visualmente consistente com o tema **Vaadin Lumo**.
+   *
+   * @returns {CSSResult}
+   */
   static get styles() {
     return css`
       #wrapper {
@@ -53,6 +95,14 @@ class OrderStatusBadge extends LitElement {
     `;
   }
 
+  /**
+   * Renderiza o conteúdo visual do componente.
+   *
+   * Quando o status é diferente de `delivered`, o texto do status é exibido (em minúsculas).
+   * Quando o status é `delivered`, o texto é ocultado e apenas o ícone de check (`vaadin:check`) é mostrado.
+   *
+   * @returns {TemplateResult}
+   */
   render() {
     return html`
       <div id="wrapper">
@@ -62,12 +112,40 @@ class OrderStatusBadge extends LitElement {
     `;
   }
 
+  /**
+   * Identificador do custom element.
+   * @readonly
+   * @returns {string}
+   */
   static get is() {
     return 'order-status-badge';
   }
 
+  /**
+   * Define as propriedades reativas do componente.
+   * Inclui o atributo `status`, que controla a aparência do badge.
+   *
+   * @returns {Object}
+   */
   static get properties() {
     return {
+      /**
+       * Define o **status atual do pedido**.
+       * Controla o texto e a aparência visual do badge.
+       *
+       * Valores suportados:
+       * - `"new"` → Pedido novo;
+       * - `"ready"` → Pedido pronto;
+       * - `"problem"` → Pedido com problema;
+       * - `"delivered"` → Pedido entregue (mostra apenas o ícone ✔️).
+       *
+       * O valor é refletido no atributo HTML e convertido automaticamente
+       * para **maiúsculas internamente** e **minúsculas externamente**.
+       *
+       * @type {string}
+       * @attribute
+       * @reflect
+       */
       status: {
         type: String,
         reflect: true,
@@ -79,6 +157,13 @@ class OrderStatusBadge extends LitElement {
     };
   }
 
+  /**
+   * Converte o status para letras minúsculas, garantindo exibição uniforme no template.
+   *
+   * @private
+   * @param {string} status - Valor atual do status.
+   * @returns {string} O valor convertido em minúsculas.
+   */
   __toLowerCase(status) {
     return status ? status.toLowerCase() : '';
   }
